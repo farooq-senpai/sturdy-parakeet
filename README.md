@@ -75,3 +75,5 @@ export default defineConfig([
 ```
 <img width="1920" height="957" alt="showcase_visualizer_1764003905623" src="https://github.com/user-attachments/assets/914f5cb3-82a3-4bdc-a20e-60613ce8550a" />
 <img width="1920" height="957" alt="showcase_assign_1764003998580" src="https://github.com/user-attachments/assets/c8171155-8b1a-4391-8aa9-8f5052c72310" />
+<img width="1920" height="957" alt="showcase_dashboard_1764003615050" src="https://github.com/user-attachments/assets/e39df11b-2b9f-4cda-ab68-5a1bbf4a731f" />
+<img width="1920" height="957" alt="showcase_solve_1764003741958" src="https://github.com/user-attachments/assets/c06c1e6e-59a7-44cd-8ba3-d949d0c12f61" />
