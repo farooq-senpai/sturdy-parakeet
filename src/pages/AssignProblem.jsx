@@ -24,11 +24,11 @@ const AssignProblem = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [isError, setIsError] = useState(false);
 
-    const handleSubmit = useCallback((e) => {
+    const handleSubmit = (e) => {
         e.preventDefault();
         console.log('Problem submitted:', formData);
         alert('Problem created! (Mock)');
-    }, [formData]);
+    };
 
     const runCode = useCallback(async () => {
         setIsLoading(true);

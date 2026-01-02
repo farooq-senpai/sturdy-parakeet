@@ -2,6 +2,8 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { Play, RotateCcw, BarChart2 } from 'lucide-react';
 import { motion } from 'framer-motion';
 
+const ARRAY_SIZE = 20; // Number of elements in the sorting visualization
+
 const Visualizer = () => {
     const [array, setArray] = useState([]);
     const [isSorting, setIsSorting] = useState(false);
@@ -14,7 +16,7 @@ const Visualizer = () => {
 
     const resetArray = useCallback(() => {
         const newArray = [];
-        for (let i = 0; i < 20; i++) {
+        for (let i = 0; i < ARRAY_SIZE; i++) {
             newArray.push(Math.floor(Math.random() * 100) + 10);
         }
         setArray(newArray);
