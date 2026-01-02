@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { Save, Code, AlertCircle, Play, Loader2, RotateCcw } from 'lucide-react';
 import Editor from '@monaco-editor/react';
 import axios from 'axios';
@@ -30,7 +30,7 @@ const AssignProblem = () => {
         alert('Problem created! (Mock)');
     };
 
-    const runCode = async () => {
+    const runCode = useCallback(async () => {
         setIsLoading(true);
         setOutput(null);
         setIsError(false);
@@ -56,7 +56,11 @@ const AssignProblem = () => {
         } finally {
             setIsLoading(false);
         }
-    };
+    }, [formData.language, formData.template]);
+
+    const updateFormField = useCallback((field, value) => {
+        setFormData(prev => ({ ...prev, [field]: value }));
+    }, []);
 
     return (
         <div className="max-w-6xl mx-auto">
@@ -84,7 +88,7 @@ const AssignProblem = () => {
                                 className="w-full bg-black/20 border border-white/10 rounded-lg px-4 py-3 focus:outline-none focus:border-primary transition-colors"
                                 placeholder="e.g., Two Sum"
                                 value={formData.title}
-                                onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                                onChange={(e) => updateFormField('title', e.target.value)}
                             />
                         </div>
 
@@ -94,7 +98,7 @@ const AssignProblem = () => {
                                 className="w-full bg-black/20 border border-white/10 rounded-lg px-4 py-3 focus:outline-none focus:border-primary transition-colors h-40"
                                 placeholder="Describe the problem, input/output format, and constraints..."
                                 value={formData.description}
-                                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                                onChange={(e) => updateFormField('description', e.target.value)}
                             />
                         </div>
 
@@ -118,7 +122,7 @@ const AssignProblem = () => {
                                     height="100%"
                                     language={formData.language === 'c' || formData.language === 'cpp' ? 'cpp' : formData.language}
                                     value={formData.template}
-                                    onChange={(value) => setFormData({ ...formData, template: value })}
+                                    onChange={(value) => updateFormField('template', value)}
                                     theme="vs-dark"
                                     options={{
                                         minimap: { enabled: false },
@@ -163,7 +167,7 @@ const AssignProblem = () => {
                                     <button
                                         key={diff}
                                         type="button"
-                                        onClick={() => setFormData({ ...formData, difficulty: diff })}
+                                        onClick={() => updateFormField('difficulty', diff)}
                                         className={`px-3 py-2 rounded-lg text-sm font-medium transition-all ${formData.difficulty === diff
                                                 ? diff === 'Easy' ? 'bg-green-500/20 text-green-400 border border-green-500/50'
                                                     : diff === 'Medium' ? 'bg-orange-500/20 text-orange-400 border border-orange-500/50'
@@ -182,7 +186,7 @@ const AssignProblem = () => {
                             <select
                                 className="w-full bg-black/20 border border-white/10 rounded-lg px-4 py-3 focus:outline-none focus:border-primary appearance-none"
                                 value={formData.language}
-                                onChange={(e) => setFormData({ ...formData, language: e.target.value })}
+                                onChange={(e) => updateFormField('language', e.target.value)}
                             >
                                 <option value="python">Python</option>
                                 <option value="java">Java</option>

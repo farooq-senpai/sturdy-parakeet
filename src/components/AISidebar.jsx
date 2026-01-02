@@ -1,6 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { X, Send, Bot, Sparkles } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+
+const MAX_MESSAGES = 50; // Limit message history to prevent unbounded growth
 
 const AISidebar = ({ isOpen, onClose }) => {
     const [messages, setMessages] = useState([
@@ -8,21 +10,35 @@ const AISidebar = ({ isOpen, onClose }) => {
     ]);
     const [input, setInput] = useState('');
 
-    const handleSend = () => {
+    const handleSend = useCallback(() => {
         if (!input.trim()) return;
 
         const userMsg = { role: 'user', content: input };
-        setMessages([...messages, userMsg]);
+        setMessages(prev => {
+            const updated = [...prev, userMsg];
+            // Keep only the last MAX_MESSAGES messages to prevent memory issues
+            return updated.length > MAX_MESSAGES ? updated.slice(-MAX_MESSAGES) : updated;
+        });
         setInput('');
 
         // Mock AI response
         setTimeout(() => {
-            setMessages(prev => [...prev, {
-                role: 'ai',
-                content: `I see you're asking about "${userMsg.content}". Here's a hint: Try breaking the problem down into smaller sub-problems. Would you like a code snippet?`
-            }]);
+            setMessages(prev => {
+                const aiMsg = {
+                    role: 'ai',
+                    content: `I see you're asking about "${userMsg.content}". Here's a hint: Try breaking the problem down into smaller sub-problems. Would you like a code snippet?`
+                };
+                const updated = [...prev, aiMsg];
+                return updated.length > MAX_MESSAGES ? updated.slice(-MAX_MESSAGES) : updated;
+            });
         }, 1000);
-    };
+    }, [input]);
+
+    const handleKeyPress = useCallback((e) => {
+        if (e.key === 'Enter') {
+            handleSend();
+        }
+    }, [handleSend]);
 
     return (
         <AnimatePresence>
@@ -68,7 +84,7 @@ const AISidebar = ({ isOpen, onClose }) => {
                                 type="text"
                                 value={input}
                                 onChange={(e) => setInput(e.target.value)}
-                                onKeyPress={(e) => e.key === 'Enter' && handleSend()}
+                                onKeyPress={handleKeyPress}
                                 placeholder="Ask for help..."
                                 className="w-full bg-black/20 border border-white/10 rounded-full pl-4 pr-10 py-2.5 text-sm focus:outline-none focus:border-primary transition-colors"
                             />

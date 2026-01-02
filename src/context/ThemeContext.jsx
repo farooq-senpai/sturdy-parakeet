@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useMemo } from 'react';
 import { themes } from '../utils/themes';
 
 const ThemeContext = createContext();
@@ -10,23 +10,36 @@ export const ThemeProvider = ({ children }) => {
         const theme = themes[currentTheme];
         const root = document.documentElement;
 
-        // Apply colors
+        // Batch DOM updates for better performance
+        const updates = [];
+        
+        // Prepare color updates
         Object.entries(theme.colors).forEach(([key, value]) => {
-            root.style.setProperty(`--${key}`, value);
+            updates.push([`--${key}`, value]);
+        });
+        
+        // Prepare style updates
+        updates.push(['--radius', theme.styles.radius]);
+        
+        // Apply all updates in a single batch
+        updates.forEach(([key, value]) => {
+            root.style.setProperty(key, value);
         });
 
-        // Apply styles
-        root.style.setProperty('--radius', theme.styles.radius);
-
         // Apply font
-        // Note: In a real app, we'd load the font dynamically. 
-        // For now, we assume standard fonts or imported ones.
         root.style.fontFamily = theme.styles.font;
 
     }, [currentTheme]);
 
+    // Memoize context value to prevent unnecessary re-renders
+    const contextValue = useMemo(() => ({
+        currentTheme,
+        setCurrentTheme,
+        themes
+    }), [currentTheme]);
+
     return (
-        <ThemeContext.Provider value={{ currentTheme, setCurrentTheme, themes }}>
+        <ThemeContext.Provider value={contextValue}>
             {children}
         </ThemeContext.Provider>
     );

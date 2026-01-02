@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { useParams } from 'react-router-dom';
 import Editor from '@monaco-editor/react';
 import axios from 'axios';
@@ -27,14 +27,14 @@ const SolveProblem = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [isError, setIsError] = useState(false);
 
-    const handleLanguageChange = (newLang) => {
+    const handleLanguageChange = useCallback((newLang) => {
         setLanguage(newLang);
         setCode(BOILERPLATES[newLang]);
         setOutput(null);
         setIsError(false);
-    };
+    }, []);
 
-    const runCode = async () => {
+    const runCode = useCallback(async () => {
         setIsLoading(true);
         setOutput(null);
         setIsError(false);
@@ -60,7 +60,11 @@ const SolveProblem = () => {
         } finally {
             setIsLoading(false);
         }
-    };
+    }, [language, code]);
+
+    const resetCode = useCallback(() => {
+        setCode(BOILERPLATES[language]);
+    }, [language]);
 
     return (
         <div className="h-[calc(100vh-8rem)] flex flex-col lg:flex-row gap-6">
@@ -117,7 +121,7 @@ const SolveProblem = () => {
 
                     <div className="flex items-center space-x-2">
                         <button
-                            onClick={() => setCode(BOILERPLATES[language])}
+                            onClick={resetCode}
                             className="p-2 text-gray-400 hover:text-white transition-colors rounded-lg hover:bg-white/5"
                             title="Reset Code"
                         >
