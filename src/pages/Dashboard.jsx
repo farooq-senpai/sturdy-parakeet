@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { memo } from 'react';
 import { Users, BookOpen, CheckCircle, Clock } from 'lucide-react';
 import { motion } from 'framer-motion';
 
-const StatCard = ({ icon: Icon, label, value, color }) => (
+// Memoize StatCard to prevent unnecessary re-renders
+const StatCard = memo(({ icon: Icon, label, value, color }) => (
     <motion.div
         whileHover={{ y: -5 }}
         className="glass-panel p-6 rounded-xl relative overflow-hidden"
@@ -18,7 +19,17 @@ const StatCard = ({ icon: Icon, label, value, color }) => (
             <p className="text-gray-400 text-sm">{label}</p>
         </div>
     </motion.div>
-);
+));
+
+StatCard.displayName = 'StatCard';
+
+// Move static data outside component to prevent recreation on every render
+const recentActivities = [
+    { id: 1, student: 'Student 1', problem: 'Binary Search', time: '2 hours ago', status: 'Passed' },
+    { id: 2, student: 'Student 2', problem: 'Binary Search', time: '2 hours ago', status: 'Passed' },
+    { id: 3, student: 'Student 3', problem: 'Binary Search', time: '2 hours ago', status: 'Passed' },
+    { id: 4, student: 'Student 4', problem: 'Binary Search', time: '2 hours ago', status: 'Passed' }
+];
 
 const Dashboard = () => {
     return (
@@ -39,19 +50,19 @@ const Dashboard = () => {
                 <div className="glass-panel p-6 rounded-xl">
                     <h3 className="text-xl font-bold mb-6">Recent Activity</h3>
                     <div className="space-y-4">
-                        {[1, 2, 3, 4].map((i) => (
-                            <div key={i} className="flex items-center justify-between p-4 rounded-lg bg-white/5 hover:bg-white/10 transition-colors">
+                        {recentActivities.map((activity) => (
+                            <div key={activity.id} className="flex items-center justify-between p-4 rounded-lg bg-white/5 hover:bg-white/10 transition-colors">
                                 <div className="flex items-center space-x-4">
                                     <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center text-sm font-bold">
-                                        S{i}
+                                        S{activity.id}
                                     </div>
                                     <div>
-                                        <p className="font-medium">Student {i} submitted "Binary Search"</p>
-                                        <p className="text-xs text-gray-400">2 hours ago</p>
+                                        <p className="font-medium">{activity.student} submitted "{activity.problem}"</p>
+                                        <p className="text-xs text-gray-400">{activity.time}</p>
                                     </div>
                                 </div>
                                 <span className="px-3 py-1 rounded-full text-xs bg-green-500/20 text-green-400">
-                                    Passed
+                                    {activity.status}
                                 </span>
                             </div>
                         ))}

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { LayoutDashboard, Code, PlusCircle, Settings, LogOut, Menu, Palette, Bot, BarChart2 } from 'lucide-react';
 import { motion } from 'framer-motion';
@@ -23,6 +23,18 @@ const Layout = ({ children }) => {
     const { currentTheme, setCurrentTheme, themes } = useTheme();
     const [isAIOpen, setIsAIOpen] = useState(false);
     const [isThemeMenuOpen, setIsThemeMenuOpen] = useState(false);
+
+    const toggleThemeMenu = useCallback(() => {
+        setIsThemeMenuOpen(prev => !prev);
+    }, []);
+
+    const handleThemeChange = useCallback((key) => {
+        setCurrentTheme(key);
+        setIsThemeMenuOpen(false);
+    }, [setCurrentTheme]);
+
+    const openAI = useCallback(() => setIsAIOpen(true), []);
+    const closeAI = useCallback(() => setIsAIOpen(false), []);
 
     return (
         <div className="min-h-screen bg-background text-foreground flex transition-colors duration-500">
@@ -63,7 +75,7 @@ const Layout = ({ children }) => {
                     {/* Theme Switcher */}
                     <div className="relative">
                         <button
-                            onClick={() => setIsThemeMenuOpen(!isThemeMenuOpen)}
+                            onClick={toggleThemeMenu}
                             className="w-full flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-400 hover:bg-white/5 hover:text-white transition-all duration-200"
                         >
                             <Palette size={20} />
@@ -74,10 +86,7 @@ const Layout = ({ children }) => {
                                 {Object.entries(themes).map(([key, theme]) => (
                                     <button
                                         key={key}
-                                        onClick={() => {
-                                            setCurrentTheme(key);
-                                            setIsThemeMenuOpen(false);
-                                        }}
+                                        onClick={() => handleThemeChange(key)}
                                         className={`w-full text-left px-4 py-2 text-sm hover:bg-primary/20 hover:text-primary transition-colors ${currentTheme === key ? 'text-primary bg-primary/10' : 'text-gray-400'}`}
                                     >
                                         {theme.name}
@@ -88,7 +97,7 @@ const Layout = ({ children }) => {
                     </div>
 
                     <button
-                        onClick={() => setIsAIOpen(true)}
+                        onClick={openAI}
                         className="w-full flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-400 hover:bg-purple-500/10 hover:text-purple-400 transition-all duration-200"
                     >
                         <Bot size={20} />
@@ -125,7 +134,7 @@ const Layout = ({ children }) => {
             </main>
 
             {/* AI Sidebar */}
-            <AISidebar isOpen={isAIOpen} onClose={() => setIsAIOpen(false)} />
+            <AISidebar isOpen={isAIOpen} onClose={closeAI} />
         </div>
     );
 };

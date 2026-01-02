@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Play, RotateCcw, BarChart2 } from 'lucide-react';
 import { motion } from 'framer-motion';
 
@@ -12,7 +12,7 @@ const Visualizer = () => {
         resetArray();
     }, []);
 
-    const resetArray = () => {
+    const resetArray = useCallback(() => {
         const newArray = [];
         for (let i = 0; i < 20; i++) {
             newArray.push(Math.floor(Math.random() * 100) + 10);
@@ -20,9 +20,9 @@ const Visualizer = () => {
         setArray(newArray);
         setSortedIndices([]);
         setActiveIndices([]);
-    };
+    }, []);
 
-    const bubbleSort = async () => {
+    const bubbleSort = useCallback(async () => {
         setIsSorting(true);
         const arr = [...array];
         const n = arr.length;
@@ -33,9 +33,8 @@ const Visualizer = () => {
                 await new Promise((resolve) => setTimeout(resolve, 100));
 
                 if (arr[j] > arr[j + 1]) {
-                    let temp = arr[j];
-                    arr[j] = arr[j + 1];
-                    arr[j + 1] = temp;
+                    // Swap elements
+                    [arr[j], arr[j + 1]] = [arr[j + 1], arr[j]];
                     setArray([...arr]);
                 }
             }
@@ -44,7 +43,7 @@ const Visualizer = () => {
         setSortedIndices((prev) => [...prev, 0]);
         setActiveIndices([]);
         setIsSorting(false);
-    };
+    }, [array]);
 
     return (
         <div className="space-y-6">

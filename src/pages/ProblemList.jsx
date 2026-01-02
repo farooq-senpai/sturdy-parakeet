@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { memo } from 'react';
 import { Code, CheckCircle, Clock, ChevronRight } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 
+// Move static data outside component to prevent recreation on every render
 const problems = [
     { id: 1, title: 'Two Sum', difficulty: 'Easy', submissions: 120, status: 'Active' },
     { id: 2, title: 'Reverse Linked List', difficulty: 'Medium', submissions: 85, status: 'Active' },
@@ -10,6 +11,60 @@ const problems = [
     { id: 4, title: 'Valid Palindrome', difficulty: 'Easy', submissions: 150, status: 'Active' },
     { id: 5, title: 'LRU Cache', difficulty: 'Medium', submissions: 60, status: 'Active' },
 ];
+
+// Memoize ProblemRow to prevent unnecessary re-renders
+const ProblemRow = memo(({ problem, index }) => (
+    <motion.tr
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: index * 0.05 }}
+        className="border-b border-white/5 hover:bg-white/5 transition-colors group"
+    >
+        <td className="px-6 py-4">
+            <div className="flex items-center space-x-3">
+                <div className="p-2 rounded-lg bg-blue-500/10 text-blue-400">
+                    <Code size={18} />
+                </div>
+                <span className="font-medium group-hover:text-blue-400 transition-colors">
+                    {problem.title}
+                </span>
+            </div>
+        </td>
+        <td className="px-6 py-4">
+            <span
+                className={`px-3 py-1 rounded-full text-xs font-medium ${problem.difficulty === 'Easy'
+                        ? 'bg-green-500/20 text-green-400'
+                        : problem.difficulty === 'Medium'
+                            ? 'bg-orange-500/20 text-orange-400'
+                            : 'bg-red-500/20 text-red-400'
+                    }`}
+            >
+                {problem.difficulty}
+            </span>
+        </td>
+        <td className="px-6 py-4">
+            <div className="flex items-center space-x-2">
+                {problem.status === 'Active' ? (
+                    <CheckCircle size={14} className="text-green-400" />
+                ) : (
+                    <Clock size={14} className="text-gray-400" />
+                )}
+                <span className="text-sm text-gray-300">{problem.status}</span>
+            </div>
+        </td>
+        <td className="px-6 py-4 text-gray-400">{problem.submissions}</td>
+        <td className="px-6 py-4">
+            <Link
+                to={`/solve/${problem.id}`}
+                className="p-2 hover:bg-white/10 rounded-full transition-colors text-gray-400 hover:text-white inline-block"
+            >
+                <ChevronRight size={18} />
+            </Link>
+        </td>
+    </motion.tr>
+));
+
+ProblemRow.displayName = 'ProblemRow';
 
 const ProblemList = () => {
     return (
@@ -35,55 +90,7 @@ const ProblemList = () => {
                         </thead>
                         <tbody>
                             {problems.map((problem, index) => (
-                                <motion.tr
-                                    key={problem.id}
-                                    initial={{ opacity: 0, y: 10 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    transition={{ delay: index * 0.05 }}
-                                    className="border-b border-white/5 hover:bg-white/5 transition-colors group"
-                                >
-                                    <td className="px-6 py-4">
-                                        <div className="flex items-center space-x-3">
-                                            <div className="p-2 rounded-lg bg-blue-500/10 text-blue-400">
-                                                <Code size={18} />
-                                            </div>
-                                            <span className="font-medium group-hover:text-blue-400 transition-colors">
-                                                {problem.title}
-                                            </span>
-                                        </div>
-                                    </td>
-                                    <td className="px-6 py-4">
-                                        <span
-                                            className={`px-3 py-1 rounded-full text-xs font-medium ${problem.difficulty === 'Easy'
-                                                    ? 'bg-green-500/20 text-green-400'
-                                                    : problem.difficulty === 'Medium'
-                                                        ? 'bg-orange-500/20 text-orange-400'
-                                                        : 'bg-red-500/20 text-red-400'
-                                                }`}
-                                        >
-                                            {problem.difficulty}
-                                        </span>
-                                    </td>
-                                    <td className="px-6 py-4">
-                                        <div className="flex items-center space-x-2">
-                                            {problem.status === 'Active' ? (
-                                                <CheckCircle size={14} className="text-green-400" />
-                                            ) : (
-                                                <Clock size={14} className="text-gray-400" />
-                                            )}
-                                            <span className="text-sm text-gray-300">{problem.status}</span>
-                                        </div>
-                                    </td>
-                                    <td className="px-6 py-4 text-gray-400">{problem.submissions}</td>
-                                    <td className="px-6 py-4">
-                                        <Link
-                                            to={`/solve/${problem.id}`}
-                                            className="p-2 hover:bg-white/10 rounded-full transition-colors text-gray-400 hover:text-white inline-block"
-                                        >
-                                            <ChevronRight size={18} />
-                                        </Link>
-                                    </td>
-                                </motion.tr>
+                                <ProblemRow key={problem.id} problem={problem} index={index} />
                             ))}
                         </tbody>
                     </table>
